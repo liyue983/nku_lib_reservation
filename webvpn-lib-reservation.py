@@ -4,7 +4,6 @@
 # In[1]:
 
 
-import time
 import datetime
 import json
 from webvpn import WebVPN
@@ -64,7 +63,7 @@ def get_rm_state(sess, date=None, classkind=8, act='get_rsv_sta'):
 
 
 def get_one_table():
-    # TODO: or Not Userful
+    # TODO or Not Userful
     # https://libic.nankai.edu.cn/ClientWeb/pro/ajax/device.aspx?date=20211225&classkind=8&dev_id=919925&act=get_rsv_sta&_nocache=1640399292619
     result = []
     params = {
@@ -100,7 +99,6 @@ def searchByName(sess, name='薛宇琼', date=None, isAll=False):
                         "end": us['end'],
                         "state": us['state']
                     }
-                    # += tab['devName']+':'+us['owner']+':'+us['start'].split()[-1]+'~'+us['end'].split()[-1] + '||'
                     result.append(temp)
                     # print(result)
                     if not isAll:
@@ -129,6 +127,7 @@ def searchByTab(sess, table='F4E017', date=None, isAll=False):
                 result.append(temp)
                 if not isAll:
                     return result
+            return result
     return result
 
 
@@ -142,6 +141,8 @@ def searchForAvailableByRequest(sess, start, end, date=None, isAll=True, rooms=N
         room_id = room_ids[room_name]
         sectionJson = get_rsv_state(
             sess, room_id=room_id, date=date, start=start, end=end)
+        if sectionJson is None:
+            continue
         for tab in sectionJson:
             if tab["state"] != "close" and tab["freeSta"] == 0:
                 result.append(tab)
@@ -183,37 +184,102 @@ def setReserve(sess, table="F4E023", tableInf=None, start=None, end=None):
     return a.json()
 
 
-# In[21]:
+# In[13]:
 
 
 def reserveByNeeds(sess, start, end, date=None, rooms=[], retry=1):
     date = date or str(datetime.date.today())
+    rooms = rooms or room_ids.keys()
     for i in range(retry):
-        tables = searchForAvailableByRequest(
-            sess, start, end, date=date, rooms=rooms)
-        if tables:
-            candidate = tables[0]
-            print(candidate['devName'])
-            print(setReserve(vpn, tableInf=candidate,
-                  start=date+" "+start, end=date+" "+end))
-            return
-        time.sleep(5)
+        for room_name in rooms:
+            room_id = room_ids[room_name]
+            sectionJson = get_rsv_state(
+                sess, room_id=room_id, date=date, start=start, end=end)
+            if sectionJson is None:
+                continue
+            for tab in sectionJson:
+                if tab["state"] != "close" and tab["freeSta"] == 0:
+                    print(tab['devName'])
+                    set_result = setReserve(
+                        sess, tableInf=tab, start=date+" "+start, end=date+" "+end)
+                    print(set_result)
+                    if set_result['ret'] == 1:
+                        return
     return
 
 
-# In[ ]:
+# In[14]:
 
-rooms = ['F3A', 'F3B', 'F3C', 'F3D', 'F3E', 'F3F',
-         'F4A', 'F4B', 'F4C', 'F4D', 'F4E', 'F4F']
+
+def main_handler(event, content):
+    sess = vpn.login('1811144', '')
+    reqbody = json.loads(event['body'])
+    isAll = reqbody['isAll'] if 'isAll' in reqbody.keys() else False
+    date = reqbody['date'] if 'date' in reqbody.keys() else None
+    if reqbody['searchMethod'] == 'Table':
+        return json.dumps(searchByTab(sess, table=reqbody['Table'], date=date, isAll=isAll))
+    if reqbody['searchMethod'] == 'Name':
+        return json.dumps(searchByName(sess, table=reqbody['Name'], date=date, isAll=isAll))
+    return json.dumps({"error": "searchMethod err..."})
 
 
 # In[15]:
 
 
+rooms = ['F3A', 'F3B', 'F3C', 'F3D', 'F3E', 'F3F',
+         'F4A', 'F4B', 'F4C', 'F4D', 'F4E', 'F4F'][::-1]
+
+
+# In[16]:
+
+
+date = "2021-12-27"
+start = "16:30"
+end = "17:30"
+
+
+# In[17]:
+
+
 if __name__ == '__main__':
-    vpn.login('', '')
+    vpn.login('1811144', '')
     vpn.get(libic_url)
-#     print(searchByTab(vpn,table='F4E023'))
-    print(searchForAvailableByRequest(vpn, "17:10", "22:00"))
-#     print(setReserve(vpn,"F4E023","2021-12-25 17:10","2021-12-25 22:00"))
-#     reserveByNeeds(vpn,"15:00","16:00",date=None,rooms=rooms,retry=1)
+#     print(searchByTab(vpn,table='F4E017'))
+#     print(searchForAvailableByRequest(vpn,start=start,end=end,date=date,isAll=True,rooms=rooms))
+#     print(setReserve(vpn,table="F4E023",tableInf=None,start=start,end=end))
+#     reserveByNeeds(vpn,start=start,end=end,date=date,rooms=rooms,retry=100)
+
+
+# In[18]:
+
+
+# print(searchByTab(vpn,table='F4E017',date=date))
+
+
+# In[19]:
+
+
+# r = searchForAvailableByRequest(vpn,start=start,end=end,date=date,isAll=True,rooms=rooms)
+# print(r)
+
+
+# In[20]:
+
+
+# reserveByNeeds(vpn,start=start,end=end,date=date,rooms=rooms,retry=100)
+
+
+# In[21]:
+
+
+# while 1:
+#     r=searchForAvailableByRequest(vpn,start=start,end=end,date=date,isAll=True,rooms=None)
+#     print(r,end='')
+#     if r:
+#         break
+
+
+# In[22]:
+
+
+# print(setReserve(vpn,tableInf=r[0],start=date+' '+start,end=date+' '+end))
