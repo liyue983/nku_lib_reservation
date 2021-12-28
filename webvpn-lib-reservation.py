@@ -5,7 +5,6 @@
 
 
 import datetime
-import json
 from webvpn import WebVPN
 
 
@@ -187,9 +186,11 @@ def setReserve(sess, table="F4E023", tableInf=None, start=None, end=None):
 # In[13]:
 
 
-def reserveByNeeds(sess, start, end, date=None, rooms=[], retry=1):
+def reserveByNeeds(sess, start, end, date=None, rooms=[], tables=[], retry=1, Center=False):
     date = date or str(datetime.date.today())
-    rooms = rooms or room_ids.keys()
+    rooms_in_tables = list(set([x[:3] for x in tables]))
+    print(rooms_in_tables)
+    rooms = rooms_in_tables or rooms or room_ids.keys()
     for i in range(retry):
         for room_name in rooms:
             room_id = room_ids[room_name]
@@ -199,46 +200,42 @@ def reserveByNeeds(sess, start, end, date=None, rooms=[], retry=1):
                 continue
             for tab in sectionJson:
                 if tab["state"] != "close" and tab["freeSta"] == 0:
+                    if tables and (tab['devName'] not in tables):
+                        continue
+                    if Center:
+                        tabind = int(tab['devName'][-3:])
+                        if tabind <= len(sectionJson)/2 and (tabind-5) % 6 != 0:
+                            continue
+                        elif tabind > len(sectionJson)/2 and (tabind-2) % 6 != 0:
+                            continue
                     print(tab['devName'])
                     set_result = setReserve(
                         sess, tableInf=tab, start=date+" "+start, end=date+" "+end)
                     print(set_result)
                     if set_result['ret'] == 1:
                         return
+    print('没有符合的')
     return
 
 
 # In[14]:
 
 
-def main_handler(event, content):
-    sess = vpn.login('1811144', '')
-    reqbody = json.loads(event['body'])
-    isAll = reqbody['isAll'] if 'isAll' in reqbody.keys() else False
-    date = reqbody['date'] if 'date' in reqbody.keys() else None
-    if reqbody['searchMethod'] == 'Table':
-        return json.dumps(searchByTab(sess, table=reqbody['Table'], date=date, isAll=isAll))
-    if reqbody['searchMethod'] == 'Name':
-        return json.dumps(searchByName(sess, table=reqbody['Name'], date=date, isAll=isAll))
-    return json.dumps({"error": "searchMethod err..."})
+rooms = ['F3A', 'F3B', 'F3C', 'F3D', 'F3E', 'F3F',
+         'F4A', 'F4B', 'F4C', 'F4D', 'F4E', 'F4F'][::-1]
+rooms = ['F4B']
+tables = ['F4B005', 'F4B011', 'F4B017', 'F4B023', 'F4B029', 'F4B035']
 
 
 # In[15]:
 
 
-rooms = ['F3A', 'F3B', 'F3C', 'F3D', 'F3E', 'F3F',
-         'F4A', 'F4B', 'F4C', 'F4D', 'F4E', 'F4F'][::-1]
+date = "2021-12-29"
+start = "08:30"
+end = "23:00"
 
 
 # In[16]:
-
-
-date = "2021-12-27"
-start = "16:30"
-end = "17:30"
-
-
-# In[17]:
 
 
 if __name__ == '__main__':
@@ -250,36 +247,22 @@ if __name__ == '__main__':
 #     reserveByNeeds(vpn,start=start,end=end,date=date,rooms=rooms,retry=100)
 
 
+# In[17]:
+
+
+# 预定rooms中间的位置
+reserveByNeeds(vpn, start=start, end=end, date=date,
+               rooms=rooms, retry=1, Center=True)
+
+
 # In[18]:
-
-
-# print(searchByTab(vpn,table='F4E017',date=date))
-
-
-# In[19]:
-
-
-# r = searchForAvailableByRequest(vpn,start=start,end=end,date=date,isAll=True,rooms=rooms)
-# print(r)
-
-
-# In[20]:
 
 
 # reserveByNeeds(vpn,start=start,end=end,date=date,rooms=rooms,retry=100)
 
 
-# In[21]:
+# In[19]:
 
 
-# while 1:
-#     r=searchForAvailableByRequest(vpn,start=start,end=end,date=date,isAll=True,rooms=None)
-#     print(r,end='')
-#     if r:
-#         break
-
-
-# In[22]:
-
-
-# print(setReserve(vpn,tableInf=r[0],start=date+' '+start,end=date+' '+end))
+# 预定tables
+# reserveByNeeds(vpn,start=start,end=end,date=date,tables=tables,retry=10)
