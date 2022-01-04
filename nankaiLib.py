@@ -5,13 +5,13 @@
 
 
 import datetime
-from webvpn import WebVPN
+# from webvpn import WebVPN
 
 
 # In[2]:
 
 
-vpn = WebVPN()
+# vpn = WebVPN()
 
 
 # In[3]:
@@ -20,7 +20,7 @@ vpn = WebVPN()
 libic_url = 'https://libic.nankai.edu.cn'
 rsv_state_uri = '/ClientWeb/pro/ajax/device.aspx'
 set_rsv_uri = '/ClientWeb/pro/ajax/reserve.aspx'
-
+lib_webpage_uri = '/clientweb/xcus/ic2/Default.aspx'
 
 # In[4]:
 
@@ -189,8 +189,8 @@ def setReserve(sess, table="F4E023", tableInf=None, start=None, end=None):
 def reserveByNeeds(sess, start, end, date=None, rooms=[], tables=[], retry=1, Center=False):
     date = date or str(datetime.date.today())
     rooms_in_tables = list(set([x[:3] for x in tables]))
-    print(rooms_in_tables)
     rooms = rooms_in_tables or rooms or room_ids.keys()
+    print(rooms)
     for i in range(retry):
         for room_name in rooms:
             room_id = room_ids[room_name]
@@ -213,7 +213,7 @@ def reserveByNeeds(sess, start, end, date=None, rooms=[], tables=[], retry=1, Ce
                         sess, tableInf=tab, start=date+" "+start, end=date+" "+end)
                     print(set_result)
                     if set_result['ret'] == 1:
-                        return
+                        return set_result
     print('没有符合的')
     return
 
@@ -239,20 +239,21 @@ end = "23:00"
 
 
 if __name__ == '__main__':
-    vpn.login('1811144', '')
-    vpn.get(libic_url)
-#     print(searchByTab(vpn,table='F4E017'))
-#     print(searchForAvailableByRequest(vpn,start=start,end=end,date=date,isAll=True,rooms=rooms))
-#     print(setReserve(vpn,table="F4E023",tableInf=None,start=start,end=end))
-#     reserveByNeeds(vpn,start=start,end=end,date=date,rooms=rooms,retry=100)
+    pass
+    # vpn.login('1811144', '')
+    # # vpn.get(libic_url)
+    # print(searchByTab(vpn,table='F4E017'))
+    # print(searchForAvailableByRequest(vpn,start=start,end=end,date=date,isAll=True,rooms=rooms))
+    # print(setReserve(vpn,table="F4E023",tableInf=None,start=start,end=end))
+    # reserveByNeeds(vpn,start=start,end=end,date=date,rooms=rooms,retry=100)
 
 
 # In[17]:
 
 
 # 预定rooms中间的位置
-reserveByNeeds(vpn, start=start, end=end, date=date,
-               rooms=rooms, retry=1, Center=True)
+# reserveByNeeds(vpn, start=start, end=end, date=date,
+#                rooms=rooms, retry=1, Center=True)
 
 
 # In[18]:
