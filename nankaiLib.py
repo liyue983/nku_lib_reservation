@@ -84,7 +84,7 @@ room_ids = {'F3A': '837656', 'F3B': '837668', 'F3C': '837677', 'F3D': '837686', 
 # In[8]:
 
 
-def searchByName(sess, name='薛宇琼', date=None, isAll=False):
+def searchByName(sess, name='', date=None, isAll=False):
     result = []
     for room_id in room_ids.values():
         sectionJson = get_rsv_state(sess, room_id=room_id, date=date)
@@ -240,7 +240,7 @@ end = "23:00"
 
 if __name__ == '__main__':
     pass
-    # vpn.login('1811144', '')
+    # vpn.login('', '')
     # # vpn.get(libic_url)
     # print(searchByTab(vpn,table='F4E017'))
     # print(searchForAvailableByRequest(vpn,start=start,end=end,date=date,isAll=True,rooms=rooms))
