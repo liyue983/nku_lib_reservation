@@ -55,6 +55,9 @@ print(list([x['devName'] for x in r]))
 
 [example3.py](eaxmple3.py)
 
+<details>
+<summary>前半部分代码与前面一致</summary>
+
 ```python
 from webvpn import WebVPN
 import nankaiLib as lib
@@ -64,7 +67,11 @@ vpn = WebVPN()
 vpn.login('', '')
 # init lib
 vpn.get(lib.libic_url+lib.lib_webpage_uri)
+```
 
+</details>
+
+```python
 date = "2022-01-05"
 start = "17:00"
 end = "18:00"
@@ -80,6 +87,9 @@ print(lib.reserveByNeeds(vpn, start=start, end=end, date=date,
 
 [example4.py](eaxmple4.py)
 
+<details>
+<summary>前半部分代码与前面一致</summary>
+
 ```python
 from webvpn import WebVPN
 import nankaiLib as lib
@@ -89,7 +99,11 @@ vpn = WebVPN()
 vpn.login('', '')
 # init lib
 vpn.get(lib.libic_url+lib.lib_webpage_uri)
+```
 
+</details>
+
+```python
 date = "2022-01-05"
 start = "17:00"
 end = "18:00"
@@ -98,6 +112,4 @@ tables = ['F4A054', 'F4B011']
 # 根据tables尝试预定指定座位，retry为尝试次数。
 lib.reserveByNeeds(vpn, start=start, end=end, date=date,
                    tables=tables, retry=10)
-
-
 ```
