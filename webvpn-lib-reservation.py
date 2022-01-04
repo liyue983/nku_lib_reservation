@@ -221,8 +221,8 @@ def reserveByNeeds(sess, start, end, date=None, rooms=[], tables=[], retry=1, Ce
 # In[14]:
 
 
-rooms = ['F3A', 'F3B', 'F3C', 'F3D', 'F3E', 'F3F',
-         'F4A', 'F4B', 'F4C', 'F4D', 'F4E', 'F4F'][::-1]
+rooms_most = ['F3A', 'F3B', 'F3C', 'F3D', 'F3E', 'F3F',
+              'F4A', 'F4B', 'F4C', 'F4D', 'F4E', 'F4F'][::-1]
 rooms = ['F4B']
 tables = ['F4B005', 'F4B011', 'F4B017', 'F4B023', 'F4B029', 'F4B035']
 
@@ -258,7 +258,7 @@ reserveByNeeds(vpn, start=start, end=end, date=date,
 # In[18]:
 
 
-# reserveByNeeds(vpn,start=start,end=end,date=date,rooms=rooms,retry=100)
+# reserveByNeeds(vpn,start=start,end=end,date=date,rooms=rooms_most,retry=100)
 
 
 # In[19]:
