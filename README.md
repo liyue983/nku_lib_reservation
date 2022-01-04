@@ -4,6 +4,8 @@
 
 ## 查询座位信息
 
+查询座位信息有两个函数，`lib.searchByTab()`通过座位的名称查询，`lib.searchByName()`通过名字来查询,`isAll`参数表示是否给出所有结果
+
 [example1.py](example1.py)
 
 ```python
@@ -26,6 +28,8 @@ print(lib.searchByName(vpn, name='', date=date))
 ```
 
 ## 查询空闲座位
+
+`lib.searchForAvailableByRequest()`查找指定时间空闲的座位
 
 [example2.py](example2.py)
 
@@ -52,6 +56,8 @@ print(list([x['devName'] for x in r]))
 ```
 
 ## 预定空闲座位
+
+`lib.reserveByNeeds()`
 
 [example3.py](eaxmple3.py)
 
@@ -84,6 +90,8 @@ print(lib.reserveByNeeds(vpn, start=start, end=end, date=date,
 ```
 
 ## 预定指定座位
+
+`lib.reserveByNeeds()`
 
 [example4.py](eaxmple4.py)
 
