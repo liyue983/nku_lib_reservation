@@ -1,6 +1,6 @@
 # nku_lib_reservation
 
-这个用来查询津南图书馆的座位信息、空闲座位、以及预定空闲座位。这里用到了之前写的一个工具[webvpn](../nankai-webvpn/)，用来登录南开的 webvpn。
+这个用来查询津南图书馆的座位信息、空闲座位、以及预定空闲座位。这里用到了之前写的一个工具[webvpn](https://github.com/liyue983/nankai-webvpn)，用来登录南开的 webvpn。
 
 ## 查询座位信息
 
